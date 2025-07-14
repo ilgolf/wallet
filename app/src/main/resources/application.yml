@@ -1,0 +1,7 @@
+server:
+  port: 8081
+spring:
+  config:
+    activate:
+      on-profile: docker
+    import: file:${user.home}/ngt_project/wallet/infra/src/main/resources/application.yml
