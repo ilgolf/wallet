@@ -4,4 +4,5 @@ spring:
   config:
     activate:
       on-profile: docker
-    import: file:${user.home}/ngt_project/wallet/infra/src/main/resources/application.yml
+    import: file:${CONFIG_PATH:./infra/src/main/resources/application.yml}
+

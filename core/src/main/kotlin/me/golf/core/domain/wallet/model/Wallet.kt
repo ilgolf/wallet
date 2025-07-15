@@ -28,11 +28,11 @@ class Wallet(
     @Column(name = "settlement_complete_date", nullable = true)
     val settlementCompleteDate: LocalDateTime? = null,
 
-    @OneToOne(cascade = [(CascadeType.ALL)], orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.PERSIST, CascadeType.MERGE], orphanRemoval = true)
     @JoinColumn(name = "order_id", nullable = false)
     val order: Order,
 
-    @ManyToOne(cascade = [(CascadeType.ALL)], fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_id", nullable = false)
     val seller: Seller,
 ): BaseEntity()

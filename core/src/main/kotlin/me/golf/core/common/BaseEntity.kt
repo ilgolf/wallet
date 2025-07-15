@@ -6,6 +6,7 @@ import jakarta.persistence.MappedSuperclass
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @MappedSuperclass
@@ -14,9 +15,9 @@ open class BaseEntity {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP",)
-    var createdDate: LocalDateTime? = null
+    var createdDate: LocalDateTime = LocalDateTime.now()
 
     @LastModifiedDate
     @Column(name = "modified_at", nullable = false, columnDefinition = "datetime DEFAULT CURRENT_TIMESTAMP")
-    var modifiedDate: LocalDateTime? = null
+    var modifiedDate: LocalDateTime = LocalDateTime.now()
 }

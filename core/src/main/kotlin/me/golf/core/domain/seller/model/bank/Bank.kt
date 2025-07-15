@@ -10,18 +10,19 @@ import java.time.LocalDateTime
 class Bank(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     val id: Long? = null,
 
     @Column(name = "name", nullable = false)
     val name: String,
 
-    @Column(name = "description", nullable = false)
+    @Column(name = "account_number", nullable = false)
     val accountNumber: String,
 
-    @Column(name = "account_note", nullable = false)
+    @Column(name = "depositor_name", nullable = false)
     val depositorName: String,
 
-    @Column(name = "depositor", nullable = false)
+    @Column(name = "is_active", nullable = false)
     val isActive: Boolean = true,
 
     @ManyToOne(fetch = FetchType.EAGER)
