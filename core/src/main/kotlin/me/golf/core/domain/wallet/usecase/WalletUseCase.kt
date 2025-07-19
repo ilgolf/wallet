@@ -4,5 +4,5 @@ import me.golf.core.domain.wallet.usecase.command.WalletSaveCommand
 
 interface WalletUseCase {
 
-    fun save(command: WalletSaveCommand)
+    fun create(command: WalletSaveCommand)
 }

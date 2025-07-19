@@ -23,3 +23,9 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
       ack-mode: record                   # 수동 커밋 전략 필요시 manual or manual_immediate
+
+payment:
+  host: localhost
+  port: 8080
+  endpoint:
+    update_event: '/api/v1/payments/event-status'
