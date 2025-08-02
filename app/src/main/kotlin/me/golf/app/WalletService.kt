@@ -23,8 +23,7 @@ class WalletService(
         }
 
         // todo: orderItem 기준으로 seller 가져오는 로직 추가
-
-        val sellers = order.orderItems.map { it.ticket.seller }
+        val sellers = order.orderItems.map { it.ticket.seller }.distinct()
 
         sellers.forEach { walletRepository.save(toWallet(order, it)) }
     }
