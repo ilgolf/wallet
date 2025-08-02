@@ -31,6 +31,11 @@ internal class WalletDeadLetterHandlerImpl(
     override fun handleDeadLetter(message: String, acknowledgment: Acknowledgment) {
         log.info("kafka event 재처리 실패 Dead Letter 처리: {}", message)
 
+        runCatching { processDeadLetter(message, acknowledgment) }
+            .onFailure { log.error("Dead Letter 처리 실패: {}", message, it) }
+    }
+
+    private fun processDeadLetter(message: String, acknowledgment: Acknowledgment) {
         val walletMessage = objectMapper.readValue<WalletMessage>(message)
 
         walletRepository.updateWalletEventFail(walletMessage.toCommand())

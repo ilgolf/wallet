@@ -36,11 +36,4 @@ internal class PaymentClientImpl(
             }
             .toBodilessEntity()
     }
-
-    private fun getPayload(userId: Long, orderId: String) = """
-                {
-                  "userId": "$userId",
-                  "orderId": "$orderId",
-                }
-            """.trimIndent()
 }

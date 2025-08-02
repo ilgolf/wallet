@@ -41,6 +41,11 @@ class KafkaConfig(
         configProps[ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapServers
         configProps[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         configProps[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
+        configProps[ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG] = 30000
+        configProps[ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG] = 10000
+        configProps[ConsumerConfig.MAX_POLL_RECORDS_CONFIG] = 10
+        configProps[ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG] = false
+        configProps[ConsumerConfig.AUTO_OFFSET_RESET_CONFIG] = "earliest"
         return DefaultKafkaConsumerFactory(configProps)
     }
 }
