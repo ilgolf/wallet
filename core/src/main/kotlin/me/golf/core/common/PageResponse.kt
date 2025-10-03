@@ -10,7 +10,7 @@ data class PageResponse<T>(
             totalElements = totalElements,
         )
     }
-    
+
     companion object {
         fun <T> empty(): PageResponse<T> {
             return PageResponse(

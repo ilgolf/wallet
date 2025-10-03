@@ -4,6 +4,7 @@ val bootJar: BootJar by tasks
 bootJar.enabled = true
 
 dependencies {
+    implementation(project(":api"))
     implementation(project(":infra"))
     implementation(project(":core"))
     implementation("org.springframework:spring-tx")
