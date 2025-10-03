@@ -8,5 +8,5 @@ import org.springframework.data.domain.Page
 interface OrderRepository {
     fun getById(id: String): Order
     fun findSellersByOrderId(id: String): List<Seller>
-    fun findSummaryBySearch(page: Int, limit: Int): Page<SettlementSummary>
+    fun findSummaryBySearch(settlementId: Long?, page: Int, limit: Int): Page<SettlementSummary>
 }

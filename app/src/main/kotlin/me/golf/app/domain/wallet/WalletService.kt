@@ -33,13 +33,14 @@ class WalletService(
 
     override fun getSettlements(search: SettlementSummarySearch): PageResponse<SettlementSummaryResult> {
         val results = orderRepository.findSummaryBySearch(
+            settlementId = search.settlementId,
             page = search.page,
             limit = search.limit
         ).map {
             it.toResult()
         }
 
-        return PageResponse.create(results.content, results.totalPages)
+        return PageResponse.create(results.content, results.totalElements)
     }
 
     private fun SettlementSummary.toResult(): SettlementSummaryResult {

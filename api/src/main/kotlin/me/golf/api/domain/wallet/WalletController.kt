@@ -18,8 +18,8 @@ class WalletController(
     @GetMapping
     fun getSettlements(request: SettlementSummaryRequest): ResponseEntity<PageResponse<SettlementSummaryResponse>> {
         val result = walletUseCase.getSettlements(request.toSearch())
-        val content = result.data.map { SettlementSummaryResponse.toResponse(it) }
+            .map { SettlementSummaryResponse.toResponse(it) }
 
-        return ResponseEntity.ok(PageResponse.create(content, result.total))
+        return ResponseEntity.ok(result)
     }
 }

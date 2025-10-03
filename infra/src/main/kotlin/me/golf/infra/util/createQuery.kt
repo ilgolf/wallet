@@ -14,9 +14,13 @@ inline fun <reified T> EntityManager.createQuery(
 ): T? {
 
     val jpql = renderer.render(query, context)
-    return this.createQuery(jpql.query, T::class.java)
-        .apply { setParams(this, jpql.params) }
-        .singleResult
+    val result = kotlin.runCatching {
+        this.createQuery(jpql.query, T::class.java)
+            .apply { setParams(this, jpql.params) }
+            .singleResult
+    }
+
+    return result.getOrNull()
 }
 
 inline fun <reified T> EntityManager.createQueryList(
@@ -36,11 +40,15 @@ inline fun <reified T> EntityManager.createQueryCount(
     context: JpqlRenderContext = JpqlRenderContext(),
     renderer: JpqlRenderer = JpqlRenderer(),
 ): Long {
-
     val jpql = renderer.render(query, context)
-    return this.createQuery(jpql.query, T::class.java)
-        .apply { setParams(this, jpql.params) }
-        .firstResult.toLong()
+
+    val result = kotlin.runCatching {
+        this.createQuery(jpql.query, T::class.java)
+            .apply { setParams(this, jpql.params) }
+            .firstResult.toLong()
+    }
+
+    return result.getOrDefault(0L)
 }
 
 fun setParams(query: Query, params: JpqlRenderedParams) {

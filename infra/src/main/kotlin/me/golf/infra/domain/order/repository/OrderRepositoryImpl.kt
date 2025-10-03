@@ -23,8 +23,9 @@ class OrderRepositoryImpl(
         return orderJdslDao.findSellersByOrderId(id)
     }
 
-    override fun findSummaryBySearch(page: Int, limit: Int): Page<SettlementSummary> {
+    override fun findSummaryBySearch(settlementId: Long?, page: Int, limit: Int): Page<SettlementSummary> {
         return orderJdslDao.findSettlementSummary(
+            settlementId = settlementId,
             page = page,
             limit = limit,
         )

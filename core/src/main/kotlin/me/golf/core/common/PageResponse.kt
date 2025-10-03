@@ -2,21 +2,27 @@ package me.golf.core.common
 
 data class PageResponse<T>(
     val data: List<T>,
-    val total: Int,
+    val totalElements: Long,
 ) {
+    fun <R> map(transform: (T) -> R): PageResponse<R> {
+        return PageResponse(
+            data = data.map(transform),
+            totalElements = totalElements,
+        )
+    }
     
     companion object {
         fun <T> empty(): PageResponse<T> {
             return PageResponse(
                 data = emptyList(),
-                total = 0,
+                totalElements = 0,
             )
         }
         
-        fun<T> create(data: List<T>, total: Int): PageResponse<T> {
+        fun<T> create(data: List<T>, totalElements: Long): PageResponse<T> {
             return PageResponse(
                 data = data,
-                total = total,
+                totalElements = totalElements,
             )
         }
     }

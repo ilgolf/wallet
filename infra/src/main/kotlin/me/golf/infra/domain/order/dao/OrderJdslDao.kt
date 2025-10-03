@@ -43,7 +43,7 @@ class OrderJdslDao(
         return entityManager.createQueryList(query, jpqlRenderContext, jpqlRenderer)
     }
 
-    fun findSettlementSummary(page: Int, limit: Int): Page<SettlementSummary> {
+    fun findSettlementSummary(settlementId: Long?, page: Int, limit: Int): Page<SettlementSummary> {
         val query: SelectQuery<SettlementSummary> = jpql {
             selectNew<SettlementSummary>(
                 path(Wallet::id),
@@ -59,6 +59,9 @@ class OrderJdslDao(
                     entity(Wallet::class),
                     join(Wallet::seller)
                 )
+                .where(
+                    settlementId?.let { path(Wallet::id).eq(it) }
+                )
         }
 
         val countQuery = jpql {
@@ -66,6 +69,9 @@ class OrderJdslDao(
                 .from(
                     entity(Wallet::class),
                     join(Wallet::seller)
+                )
+                .where(
+                    settlementId?.let { path(Wallet::id).eq(it) }
                 )
         }
 

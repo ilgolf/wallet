@@ -3,7 +3,7 @@ package me.golf.api.domain.wallet.request
 import me.golf.core.domain.wallet.usecase.command.SettlementSummarySearch
 
 data class SettlementSummaryRequest(
-    val settlementId: Long,
+    val settlementId: Long?,
     val page: Int,
     val limit: Int,
 ) {
