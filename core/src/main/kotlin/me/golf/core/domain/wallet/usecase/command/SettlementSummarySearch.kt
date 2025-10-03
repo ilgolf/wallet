@@ -5,4 +5,9 @@ data class SettlementSummarySearch(
     val page: Int,
     val limit: Int,
 ) {
+    init {
+        require(page >= 0) { "page must be non-negative" }
+        require(limit > 0) { "limit must be positive" }
+        require(limit <= 1000) { "limit must be greater than 1000" }
+    }
 }
