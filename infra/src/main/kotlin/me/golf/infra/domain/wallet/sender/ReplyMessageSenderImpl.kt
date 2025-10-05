@@ -5,6 +5,7 @@ import me.golf.core.domain.wallet.sender.ReplyMessageSender
 import me.golf.core.domain.wallet.sender.payload.WalletSaveReplyPayload
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.kafka.support.SendResult
@@ -15,10 +16,11 @@ import org.springframework.stereotype.Component
 class ReplyMessageKafkaSender(
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val objectMapper: ObjectMapper,
+    @Value("\${kafka.topics.wallet-reply}") private val walletReplyTopic: String
 ): ReplyMessageSender {
 
     override fun send(payload: WalletSaveReplyPayload) {
-        kafkaTemplate.send(WALLET_REPLY_TOPIC, payload.toJson())
+        kafkaTemplate.send(walletReplyTopic, payload.toJson())
             .whenComplete { result, ex ->
                 handleKafkaResult(
                     result = result,
@@ -38,7 +40,7 @@ class ReplyMessageKafkaSender(
         traceId: String
     ) {
         if (ex != null) {
-            log.error("❌wallet reply 이벤트 처리 실패 orderId: {}, traceId: {}", orderId, traceId)
+            log.error("❌wallet reply 이벤트 처리 실패 orderId: {}, traceId: {}", orderId, traceId, ex)
             return
         }
         log.info("✅ Kafka 성공: ${result?.recordMetadata?.offset()}")
@@ -46,7 +48,6 @@ class ReplyMessageKafkaSender(
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(this::class.java)
-        private const val WALLET_REPLY_TOPIC = "wallet-reply"
     }
 }
 

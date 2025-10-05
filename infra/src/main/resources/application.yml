@@ -29,3 +29,7 @@ payment:
   port: 8080
   endpoint:
     update_event: '/api/v1/payments/event-status'
+
+kafka:
+  topics:
+    wallet-reply: 'wallet-reply'
