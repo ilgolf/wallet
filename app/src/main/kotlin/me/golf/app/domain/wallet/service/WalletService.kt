@@ -30,8 +30,9 @@ class WalletService(
         }
 
         val sellers = orderRepository.findSellersByOrderId(command.orderId)
+            .map { it.toWallet(order) }
 
-        sellers.forEach { walletRepository.save(it.toWallet(order)) }
+        walletRepository.saveAll(sellers)
 
         eventPublisher.publishEvent(WalletSaveCompleteReplyEvent(command.orderId))
     }

@@ -137,3 +137,55 @@
 - Controller에 추상화 된 이벤트 리스너를 통해 Commerce Service로부터 이벤트를 수신합니다. 구현체는 인프라에 구현되어야 합니다.
 - Commerce Service와는 다르게 도메인 모델을 JPA entity로 사용합니다.
 - 정산에 대한 책임만 갖는다 결제 이벤트 추적관리는 오로지 Commerce Server에서 진행한다.
+
+## 메시지 처리 흐름 (Message Consume → 처리)
+
+```mermaid
+flowchart TD
+  K[(Kafka Topic 'wallet')] --> H[KafkaWalletEventHandler.handleSaveSettlement]
+  H -->|빈 메시지| Skip[로그 경고 후 무시]
+  H -->|정상 메시지| P[WalletMessage 파싱] --> U[WalletUseCase.create]
+
+  U --> C{이미 정산됨?}
+  C -- 예 --> ACK1[Kafka ACK] --> End[(종료)]
+  C -- 아니오 --> S[Wallet 저장 & 이벤트 발행]
+
+  S --> ACK2[Kafka ACK]
+  S --> E[WalletSaveCompleteReplyEvent 발행]
+  E --> R[WalletReplySubscriber]
+  R --> O[Order 재조회]
+  O --> RS[ReplyMessageSender -> Kafka 'wallet-reply']
+```
+
+- 소비: `wallet` 토픽에서 메시지 수신 → 공백은 스킵.
+- 처리: JSON → `WalletMessage` 파싱 → `WalletUseCase.create` 실행.
+- 중복 방지: 이미 정산된 주문이면 ACK 후 종료.
+- 저장/후속 이벤트: Wallet 저장 → 트랜잭션 커밋 후 Reply 이벤트 발행 → Reply 메시지를 `wallet-reply` 토픽으로 송신.
+- 커밋: 비즈니스 처리 성공 시 수동 ACK(`MANUAL_IMMEDIATE`).
+
+## DLT 흐름 (실패/재시도/데드레터)
+
+```mermaid
+flowchart TD
+  K[(Kafka Topic 'wallet')] --> H[KafkaWalletEventHandler.handleSaveSettlement]
+  H -->|예외 발생| RT[재시도 3회]
+  RT -->|재시도 모두 실패| DLT[(Kafka Topic 'wallet-dlt')]
+
+  DLT --> DH[WalletDeadLetterHandler.handleDeadLetter]
+  DH --> PD[WalletMessage 파싱]
+  PD --> UF[WalletRepository.updateWalletEventFail]
+  UF --> PC[PaymentClient PUT /api/v1/payments/event-status]
+  DH --> ACK[Kafka ACK]
+```
+
+- 재시도: `@RetryableTopic`(시도 3회, 지수 백오프, `-retry`/`-dlt` 접미사).
+- DLT 전송: 재시도 실패 시 `wallet-dlt`로 이동.
+- DLT 처리: DLT 리스너가 파싱 후 결제 서버에 실패 상태 변경(HTTP PUT) 통지.
+- 커밋: DLT 처리 후 수동 ACK.
+
+참고 코드
+- 컨슈머/ACK/에러핸들러: `infra/src/main/kotlin/me/golf/infra/config/KafkaConfig.kt`
+- 재시도/DLT 설정: `infra/src/main/kotlin/me/golf/infra/config/KafkaRetryableWithDLT.kt`
+- 정상 처리 리스너: `infra/src/main/kotlin/me/golf/infra/domain/wallet/handler/WalletEventHandler.kt`
+- DLT 처리 리스너: `infra/src/main/kotlin/me/golf/infra/domain/wallet/handler/WalletDeadLetterHandler.kt`
+- Reply 전송: `infra/src/main/kotlin/me/golf/infra/domain/wallet/sender/ReplyMessageSenderImpl.kt`

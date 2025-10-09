@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.support.SendResult
 import org.springframework.stereotype.Component
 
 @Component
@@ -20,31 +19,16 @@ class ReplyMessageKafkaSender(
 ): ReplyMessageSender {
 
     override fun send(payload: WalletSaveReplyPayload) {
-        kafkaTemplate.send(walletReplyTopic, payload.toJson())
-            .whenComplete { result, ex ->
-                handleKafkaResult(
-                    result = result,
-                    ex = ex,
-                    orderId = payload.orderId,
-                    traceId = payload.traceId
-                )
-            }
+        kotlin.runCatching {
+            kafkaTemplate.send(walletReplyTopic, payload.toJson())
+            log.info("✅ Kafka 성공 orderId {}, tracedId: {}", payload.orderId, payload.traceId)
+        }.onFailure { ex ->
+            log.error("❌wallet reply 이벤트 처리 실패 orderId: {}, traceId: {}", payload.orderId, payload.traceId, ex)
+            throw ex
+        }
     }
 
     private fun WalletSaveReplyPayload.toJson(): String = objectMapper.writeValueAsString(this)
-
-    private fun handleKafkaResult(
-        result: SendResult<String, String>?,
-        ex: Throwable?,
-        orderId: String,
-        traceId: String
-    ) {
-        if (ex != null) {
-            log.error("❌wallet reply 이벤트 처리 실패 orderId: {}, traceId: {}", orderId, traceId, ex)
-            return
-        }
-        log.info("✅ Kafka 성공: ${result?.recordMetadata?.offset()}")
-    }
 
     companion object {
         private val log: Logger = LoggerFactory.getLogger(this::class.java)
