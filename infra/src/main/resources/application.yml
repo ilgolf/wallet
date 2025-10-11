@@ -30,16 +30,10 @@ spring:
       bootstrap-servers: ${KAFKA_SERVER}
       properties:
         enable.idempotence: true
-        security.protocol: PLAINTEXT
-        max.in.flight.requests.per.connection: 1
-        delivery.timeout.ms: 60000
-        max.block.ms: 5000                 # 메타데이터 요청 타임아웃
-        reconnect.backoff.ms: 1000         # 재연결 시도 간격
-        reconnect.backoff.max.ms: 10000    # 최대 재연결 시도 간격
-        retry.backoff.ms: 1000             # 재시도 간격
-        request.timeout.ms: 30000          # 요청 타임아웃
-        connections.max.idle.ms: 540000    # 연결 유지 시간
-      retries: 3
+        delivery.timeout.ms: 12000
+        request.timeout.ms: 3000
+        retry.backoff.ms: 500
+      retries: 5
 
 payment:
   host: localhost
