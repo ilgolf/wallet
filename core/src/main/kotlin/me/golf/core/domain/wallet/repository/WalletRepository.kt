@@ -7,6 +7,7 @@ import me.golf.core.domain.wallet.usecase.command.WalletSaveCommand
 interface WalletRepository {
 
     fun save(wallet: Wallet)
+    fun saveAll(wallets: List<Wallet>)
     fun existsByOrderId(order: Order): Boolean
     fun updateWalletEventFail(command: WalletSaveCommand)
 }

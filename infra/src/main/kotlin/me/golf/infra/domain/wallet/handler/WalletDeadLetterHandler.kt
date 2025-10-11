@@ -21,8 +21,6 @@ internal class WalletDeadLetterHandlerImpl(
     private val objectMapper: ObjectMapper,
 ): WalletDeadLetterHandler {
 
-    private val log = LoggerFactory.getLogger(this::class.java)
-
     @KafkaListener(
         topics = ["wallet-dlt"],
         groupId = "wallet-dead-letter-group",
@@ -40,5 +38,9 @@ internal class WalletDeadLetterHandlerImpl(
 
         walletRepository.updateWalletEventFail(walletMessage.toCommand())
         acknowledgment.acknowledge()
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(WalletDeadLetterHandler::class.java)
     }
 }

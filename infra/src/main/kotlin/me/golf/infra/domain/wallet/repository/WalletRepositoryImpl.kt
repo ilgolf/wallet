@@ -18,6 +18,10 @@ class WalletRepositoryImpl(
         walletJpaDao.save(wallet)
     }
 
+    override fun saveAll(wallets: List<Wallet>) {
+        walletJpaDao.saveAll(wallets)
+    }
+
     override fun existsByOrderId(order: Order): Boolean {
         return walletJpaDao.existsByOrder(order)
     }

@@ -23,9 +23,24 @@ spring:
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
       ack-mode: record                   # 수동 커밋 전략 필요시 manual or manual_immediate
+    producer:
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers: ${KAFKA_SERVER}
+      properties:
+        enable.idempotence: true
+        delivery.timeout.ms: 12000
+        request.timeout.ms: 3000
+        retry.backoff.ms: 500
+      retries: 5
 
 payment:
   host: localhost
   port: 8080
   endpoint:
     update_event: '/api/v1/payments/event-status'
+
+kafka:
+  topics:
+    wallet-reply: 'wallet-reply'
