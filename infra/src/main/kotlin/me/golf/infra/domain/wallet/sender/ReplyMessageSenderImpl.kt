@@ -31,7 +31,7 @@ class ReplyMessageKafkaSender(
     private fun WalletSaveReplyPayload.toJson(): String = objectMapper.writeValueAsString(this)
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(this::class.java)
+        private val log: Logger = LoggerFactory.getLogger(ReplyMessageKafkaSender::class.java)
     }
 }
 
@@ -44,6 +44,6 @@ class ReplyMessageDefaultSender: ReplyMessageSender {
     }
 
     companion object {
-        private val log: Logger = LoggerFactory.getLogger(this::class.java)
+        private val log: Logger = LoggerFactory.getLogger(ReplyMessageDefaultSender::class.java)
     }
 }
